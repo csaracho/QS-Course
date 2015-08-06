@@ -1,0 +1,279 @@
+Examen Final del  Curso Optativo de Análisis Cuantitativo de Datos
+Problema 2: Análisis de datos en un entorno multivariado  
+Código para reproducir gráficas del Problema 2
+========================================================
+
+
+```{r}
+
+## Carga los datos del examen en 'DATOS_EX'
+url = 'http://metropolis-it.com/files/Statistics/DATOS_EX.txt'
+DATOS_EX <- read.csv(url, sep = ',', header = TRUE)
+
+attach(DATOS_EX)
+DATOS_EX
+
+## Análisis de Componentes Principales
+
+## Enseguida se muestran por ejemplo, respectivamente, todos los valores de 'SISTOLE.0', el mínimo y el máximo:
+SISTOLE.0
+min(SISTOLE.0)
+max(SISTOLE.0)
+
+## Las siguientes instrucciones muestran el procedimiento en R para normalizar valores de una variable de 0 a 1:
+(105 -min(SISTOLE.0))/(max(SISTOLE.0) - min(SISTOLE.0))
+
+(157 -min(SISTOLE.0))/(max(SISTOLE.0) - min(SISTOLE.0))
+
+(124 -min(SISTOLE.0))/(max(SISTOLE.0) - min(SISTOLE.0))
+
+## Para todos los valores, esto se hace en R como se muestra:
+factor = function(x) (x -min(x))/(max(x) - min(x))
+SISTOLE.0
+factor(SISTOLE.0)
+## Se ve que para los valores correspondientes a 105 (el mínimo) y 157 (el máximo) respectivamente, los valores convertidos (normalizados) son cero y uno
+
+## Regresando al análisis de componentes principales, los encabezados de los datos del problema de examen (DATOS_EX) son:
+names(DATOS_EX)
+## Es decir, en total 22 variables.
+
+## Análisis de Componentes Principales (PCA) 
+## incluyendo la variable 'ESCOLARIDAD'
+
+## -- Dejaremos de lado las variables (factores) que son de tipo categoría, 'NUMERO', 'EDO_CIVIL' y 'No.MEDICAMENTOS' de forma que se tomen en cuenta sólo variables de proporción o de intervalo. La variable 'EDAD' también fue omitida por el momento ya que  trataremos de utilizarla como 'variable explicativa' más adelante.
+datos_PCA = DATOS_EX[, 4:21]
+names(datos_PCA)
+head(datos_PCA)  ## Imprime los primeros 6 renglones
+
+## Como se observa, dejamos de lado todos los datos de categorías (denominados 'factores' en ANOVA) y 'EDAD' como variable explicativa. La imagen anterior muestra los primeros 6 registros [con el comando head(datos_PCA)]. Nos mueve a duda el dato de 'ESCOLARIDAD': ¿qué tiene que ver la escolaridad con lo que parece ser el estado de salud o el estado físico de una persona para este análisis de componentes principales? Lo dejaremos por el momento aunque repetiremos el análisis para los datos sin esta columna (ESCOLARIDAD).
+
+model = prcomp(datos_PCA, scale = TRUE)
+summary(model)
+
+## Se puede observar que el primer componente principal (PC1, primera combinación lineal de las 18 variables) explica el 17.15% de la variación total, y los cinco (5) siguientes componentes (PC2-PC6) explican alrededor de 53% adicional.
+
+plot(model, main='')
+## En la gráfica del modelo revelando la relativa importancia de PC1.
+## La práctica común es presuponer que se requieren suficientes componentes principales para explicar el 90% de la variación total (se requieren en el caso presente 10, de PC1-PC10, los mismos que son mostrados en la gráfica anterior, lo que R realiza automáticamente con plot(model).
+
+## Como se observa, no existe un sólo componente principal que proporcione la explicación de la variación total, sino un conjunto de componentes principales, que conllevan diferentes pesos o ponderaciones de todas las variables.
+
+## Una manera alterna de visualizar las contribuciones de las diferentes variables a los componentes principales PC1 y PC2 se consigue en R con la instrucción biplot(model), con el resultado que enseguida se muestra:
+biplot(model)
+
+## Con biplot(), las variables originales se muestran como flechas o vectores (18 en este caso).
+
+## Si sólo se tomasen PC1 y PC2 para explicar la variación total, (ya se aclaró que no es el caso), las variables que contribuyen de manera similar serían redundantes, por lo que no se requeriría más que una de ellas.
+
+## Se puede tener un segundo biplot() para los factores PC3 y PC4, con la opción choices = c(3,4) en la función (obviamente también para PC2 vs PC3, con la opción choices = c(2,3)  ):
+
+biplot(model, choices = c(3,4) )
+## En este caso, 'SISTOLE' Y 'DIASTOLE' son las variables que menos contribuyen a ambos componentes principales PC3 y PC4. Toda esta variación se podría mostrar en un hipercubo, aunque ya con tres dimensiones se presentan dificultades para entender un diagrama. Más de ésto adelante.
+
+## De la gráfica anterior se puede observar que SISTOLE.O Y SISTOLE.1 son relativamente redundantes en el sentido antes explicado. Similarmente IMC.0 e IMC.1; nótese que TRIGLICERIDOS.0 tiene más peso que TRIGLICERIDOS.1 por lo que podría decirse que esta última variable 'no aporta más información'. 
+
+## Análisis de Componentes Principales (PCA) 
+## sin la variable 'ESCOLARIDAD'
+
+## Volviendo a la opción de eliminar la variable 'ESCOLARIDAD' de este análisis, tenemos el siguiente conjunto de datos, ahora de 17 variables:
+
+datos_PCA_sin_escolaridad = datos_PCA[c(1:3, 5:18)]
+datos_PCA_sin_escolaridad
+names(datos_PCA_sin_escolaridad)
+## Hacemos un análisis PCA de este conjunto con;
+model2 = prcomp(datos_PCA_sin_escolaridad)
+summary(model2)
+## Es sorprendente como de entrada, el análisis cambia radicalmente ya que con sólo el PC1 tenemos el 31% de la explicación de la variación total, mientras con siete (7) PC (PC1-PC7) tenemos un poco más del 90% de la explicación total de la variación (compárese con diez (10) PC necesarias del análisis previo).
+
+## Las gráficas también cambian radicalmente (PC1 vs PC2), y no hemos eliminado demasiada información (datos) sino sólo las variables de aparente caracterización como de tipo 'categoría' y/o explicativas: 
+biplot(model2)
+
+## Nótese ahora que las contribuciones que destacan (en magnitud) son las de las variables 'COLESTEROL' (ambas) y TRIGLICERIDOS.0. 
+
+## COLESTEROL.0 Y COLESTEROL.1 contribuyen más bien a PC1.
+
+## El análisis multivariado aparentemente se ha simplificado. Verificaremos esto con las gráficas de PC2 vs PC3, y PC3 vs PC4: 
+biplot(model2, choices=c(2,3))
+## En este caso (PC2 vs PC3), son las variables 'TRIGLICERIDOS' (ambas) las que destacan <la '0' contribuye a PC2 (negativamente) , mientras que la '1' contribuye (negativamente) a PC3>.
+
+## Veamos ahora PC3 vs PC4: 
+biplot(model2, choices=c(3,4))
+## En este caso, TRIGLICERIDOS.1 y 'COLESTEROL'  (ambas) destacan, mientras que  aparece ahora contribuyendo una nueva variable CINTURA.0, con SISTOLE.0 Y SISTOLE.1 “redundantes”.
+
+## Generalmente se toman en cuenta los niveles de colesterol y triglicéridos como indicadores del riesgo de padecer enfermedades cardiovasculares en una persona, (mientras que es el nivel de glucosa en sangre el que se toma en cuenta para determinar el riesgo de padecer diabetes).
+
+
+## Asociación de los componentes principales con las variables de categoría (Factores) y/o explicativas
+
+## Una vez que se tienen identificados los componentes principales, los que más aportan explicación a la variación total de los datos, los primeros, se tratan de asociar (ahora sí) con las variables de categoría y/o explicativas que se dejaron de lado: 'EDO_CIVIL', No.MEDICAMENTOS, EDAD, etc.
+
+## Para ello, se presenta en una gráfica un par de variables (Un PC vs una variable de categoría y/o explicativa), como enseguida se muestra, tratando de buscar una correlación entre ellas.
+
+## Recuperar los datos originales e imprimir encabezados:
+
+attach(DATOS_EX)
+names(DATOS_EX)
+
+## Gráficas entre pares de variables:
+par(mfrow=c(2,4))  		## Grafica dos renglones por cuatro columnas
+
+uno = predict(model2)[,1]		## Toma el factor PC1 del modelo multivariado y obtén 31 							predicciones (una por cada registro)
+dos = predict(model2)[,2]		## Toma el factor PC2 del modelo multivariado y obtén 31 							predicciones (una por cada registro)
+
+plot(EDO_CIVIL,uno,pch=16,xlab="Estado Civil",ylab="PC 1")	## plot(x,y)
+plot(EDO_CIVIL,dos,pch=16,xlab="Estado Civil",ylab="PC 2")
+
+plot(EDAD,uno,pch=16,xlab="Edad",ylab="PC 1")
+plot(EDAD,dos,pch=16,xlab="Edad",ylab="PC 2")
+
+plot(No.MEDICAMENTOS,uno,pch=16,xlab="Medicamentos",ylab="PC 1")
+plot(No.MEDICAMENTOS,dos,pch=16,xlab="Medicamentos",ylab="PC 2")
+
+plot(ESCOLARIDAD,uno,pch=16,xlab="Escolaridad",ylab="PC 1")
+plot(ESCOLARIDAD,dos,pch=16,xlab="Escolaridad",ylab="PC 2")
+
+## Como se puede observar no existe una correlación aparente entre los factores principales PC1 y PC2 y las variables de categoría/explicativas. ¿Se deberá ésto a que en el análisis multivariado se ha tomado en conjunto las variables 0 y 1, es decir 'antes y después'? Procederemos a explorar la posibilidad de tomar en cuenta dos tipos de análisis: 
+
+## ---Primero con las variables no categóricas de estado 'antes' 0 (cero), y 
+## ---Un segundo análisis con las variables no categóricas del estado 1 (uno). 
+
+## Se entiende que no tiene sentido pensar en asociar las variables cero con el No. de Medicamentos porque si se trata de tratamientos, como hemos supuesto, se entiende que en el estado cero no se ha realizado tratamiento alguno. En cambio en el estado uno, suponemos que éste es resultado de la toma de medicamentos.
+
+## Análisis multivariado en relación con el 'antes' y el 'después'
+
+## En la variable 'datos_analisis_cero' colectamos los datos de variables '0'.
+datos_analisis_cero = DATOS_EX[, c(5, 8, 10, 12,14, 16, 18, 20)]
+names(datos_analisis_cero)
+
+## En la variable 'datos_analisis_uno' colectamos los datos de variables '1'.
+datos_analisis_uno = DATOS_EX[, c(6, 9, 11, 13, 15, 17, 19, 21)]
+names(datos_analisis_uno)
+
+## Análisis de variables cero
+model_cero = prcomp(datos_analisis_cero)   ## Modela los datos por componentes principales
+summary(model_cero)
+## Se observa que con 4 componentes principales(PC1-PC4) se obtiene cási el 90% de explicación de la variación total. PC1-PC2 proporcionan el 70% aproximadamente de la explicación de la variación total.
+
+## La gráfica correspondiente (relaciones entre PC's y variables) es la siguiente:
+par(mfrow=c(1,1))
+biplot(model_cero)
+## El poder explicativo de PC1-PC2 está basado como se ve en la gráfica principalmente de las variables TRIGLICERIDOS.0 Y COLESTEROL.0 . Compararemos este comportamiento en el análisis de las variables 'uno'.
+
+
+
+## Análisis de variables uno
+model_uno = prcomp(datos_analisis_uno)
+summary(model_uno)
+biplot(model_uno)
+## Como se observa en la gráfica anterior, el poder explicativo de (los nuevos) PC1-PC2 está basado principalmente de las variables TRIGLICERIDOS.1 Y COLESTEROL.1 . En este caso, la variable  TRIGLICERIDOS.1 es la que más contribuye (positivamente) a PC1 y PC2. En el caso del análisis cero, TRIGLICERIDOS.0 contribuye positivamente a PC1 y negativamente a PC2. (Ver tabla siguiente)
+```
+![alt text](http://metropolis-it.com/files/Statistics/tabla1.png)
+```{r}
+## Esto significa que los componentes principales PC, que son combinaciones lineales de variables, resultan con pesos (ponderaciones) de orden positivo o negativo como se muestra en la tabla anterior. Las demás variables no contribuyen en el grado que lo hacen Colesterol y Trigliceridos.Sobresale el hecho de que en conjunto estamos haciendo uso de 17 diferentes variables del total de 22.
+
+## Este resultaddo, aunado al hecho de que en los datos no aparece por ningún lado alguna variable que describa el 'estado de salud' de la persona, nos orilla a preguntarnos cómo estaba el estado de salud 'antes' (estado cero) de las personas (31), entendiendo que, en una primera aproximación, las dos variables detectadas (TRIGLICERIDOS y COLESTEROL) mientras más bajo sea el nivel mejor será el estado de salud.
+
+## Graficamos entonces las variables 'antes'y 'después': 
+par(mfrow=c(2,2))
+plot(COLESTEROL.0, xlab='Persona')
+boxplot(COLESTEROL.0, xlab='Boxplot para COLESTEROL.0')
+plot(COLESTEROL.1, xlab='Persona')
+boxplot(COLESTEROL.1, xlab='Boxplot para COLESTEROL.1')
+## Los 'boxplot' describen el valor mínimo, la media (barra negra), los valores principales (la caja) y el máximo. 
+## Se observa que con los 'tratamientos' en general disminuyeron marginalmente los niveles (altos) de colesterol (aunque sí se redujo la variación).
+
+par(mfrow=c(2,2))
+plot(TRIGLICERIDOS.0, xlab='Persona')
+boxplot(TRIGLICERIDOS.0, xlab='Boxplot para TRIGLICERIDOS.0')
+plot(TRIGLICERIDOS.1, xlab='Persona')
+boxplot(TRIGLICERIDOS.1, xlab='Boxplot para TRIGLICERIDOS.1')
+## Se observa que con los 'tratamientos' en general SI disminuyeron los niveles de Triglicéridos (aunque aumentó la variación).
+
+## Este comportamiento contradictorio o invertido de las variables que aportan más explicación de la variación total puede ser la causa de que hallamos encontrado resultados tan disímbolos en los análisis. 
+
+## Obsérvese también que ya nos hemos centrado, resultado del análisis, en sólo dos variables de las 22 totales (las variables de categoría y/o explicativas ya fueron utilizadas cuando diagramamos con boxplot() sus supuestas correlaciones con los PC).
+
+## Una gráfica de dispersión de este comportamiento es la siguiente:
+# 3D Scatterplot
+par(mfrow=c(1,1))
+library(scatterplot3d)
+attach(DATOS_EX)
+scatterplot3d(COLESTEROL.0,No.MEDICAMENTOS, COLESTEROL.1, main="Gráfica de dispersión 3D para Colesterol", highlight.3d = TRUE, col.axis = "blue",  col.grid = "lightblue", type = 'h')
+## En la gráfica anterior se observan todos los valores de COLESTEROL (antes y después) y en una tercera dimensión el Número de Medicamentos (del 1 al 6). Cada línea terminada en un pequeño círculo representa la variación (antes y después). (Esto se grafica así en lugar de puntos unicamente con la opción type = 'h' para efectos de visibilidad).
+
+## Similarmente para la variable TRIGLICERIDOS:
+# 3D Scatterplot
+library(scatterplot3d)
+attach(DATOS_EX)
+scatterplot3d(TRIGLICERIDOS.0,No.MEDICAMENTOS, TRIGLICERIDOS.1, main="Gráfica de dispersión 3D para Triglicéridos", highlight.3d = TRUE, col.axis = "blue",  col.grid = "lightblue", type = 'h')
+
+## Hicimos un esfuerzo final para corroborar lo que se afirma en líneas anteriores y pudimos graficar la dispersión de las dos variables antes destacadas (COLESTEROL Y TRIGLICERIDOS) contra el número de medicamentos (No.MEDICAMENTOS) estos últimos equivalentes a 'tratamientos' según hemos argumentado en este análisis.
+
+## Para ello presentamos la siguiente gráfica, la cual describe del lado izquierdo los niveles de la variable COLESTEROL (antes y después) y del lado derecho la variable TRIGLICERIDOS. Se preparó la gráfica con las mismas coordenadas para facilitar la comparación de la variación observable debida (pensamos) a la influencia del tratamiento (No.MEDICAMENTOS). Asimismo, la gráfica es presentada aprovechando 'boxplot' que es una técnica de uso común en Estadística Descriptiva (ver por ejemplo: http://en.wikipedia.org/wiki/Box_plot).
+
+## Comparacion ANTES DESPUES
+
+trats = as.factor(No.MEDICAMENTOS) ## 'trats' (tratamientos) como factores del No. de medicamentoss
+trats
+par(mfrow=c(1,2))
+plot(trats, COLESTEROL.0, xlab = 'No. Medicamentos',ylab = 'COLESTEROL.0', ylim=c(130,260), col = 'yellow')
+grid(col = "lightgray", lty = "dotted",     lwd = par("lwd"), equilogs = TRUE)
+plot(trats, TRIGLICERIDOS.0, xlab = 'No. Medicamentos',ylab = 'TRIGLICERIDOS.0', ylim = c(70, 220), col = 'orange')
+grid(col = "lightgray", lty = "dotted",     lwd = par("lwd"), equilogs = TRUE)
+
+par(mfrow=c(1,2))
+plot(trats, COLESTEROL.1, xlab = 'No. Medicamentos',ylab = 'COLESTEROL.1', ylim=c(130,260), col = 'yellow')
+grid(col = "lightgray", lty = "dotted",     lwd = par("lwd"), equilogs = TRUE)
+plot(trats, TRIGLICERIDOS.1, xlab = 'No. Medicamentos',ylab = 'TRIGLICERIDOS.1', ylim = c(70, 220), col = 'orange')
+grid(col = "lightgray", lty = "dotted",     lwd = par("lwd"), equilogs = TRUE)
+## Se observa de la gráfica anterior el siguiente comportamiento:
+
+## (En todas las referencias a la 'media' de los 'boxplots' debe decir: 'mediana')
+```
+![alt text](http://metropolis-it.com/files/Statistics/tabla2.png)
+```{r}
+## Se observa que tres (3) mediciones (dos pequeños círculos en las gráfiucas de COLESTEROL y uno en la gráfica de TRIGLICERIDOS) se desvían marcadamente de los otros datos de la muestra (outliers). Estos pudieron resultar al azar o ser indicativos de un error de medición o que la población tiene una distribución de cola alargada (ver por ejemplo: http://en.wikipedia.org/wiki/Outlier).
+
+## Además, podemos concluir lo siguiente:
+
+## (En todas las referencias a la 'media' de los 'boxplots' debe decir: 'mediana')
+```
+![alt text](http://metropolis-it.com/files/Statistics/tabla3.png)
+```{r}
+## Perspectiva clínica de los datos con los resultados obtenidos
+
+## Los datos del examen presentan  diferentes variables que van desde el código de identificación,  edad, talla, escolaridad, cintura, sístole y diástole antes y después de un 'tratamiento indicado', colesterol antes y después de dichos tratamientos así como glucosa y triglicéridos. Todos ellos dan información social y clínica de los individuos estudiados, pero ¿Qué nos quieren decir estos datos? 
+
+## Hasta ahora tenemos conclusiones donde nos damos cuenta que los parámetros más importantes que explican el fenómeno son Colesterol y Trigliceridos, ambos marcadores de obesidad y/o distintos padecimientos o de su inminencia cuando están por encima de las cifras normales que se presentan en la tabla siguiente.
+```
+![alt text](http://metropolis-it.com/files/Statistics/tabla4.png)
+```{r}
+## Cuando estas moléculas se incrementan son también indicadoras de una posible enfermedad cardiovascular ya que tienden a adherirse en las paredes de las venas y arterias, por lo cual resulta de vital importancia tomar en cuenta estos dos factores y los medicamentos que puedan mejorarlo.
+
+
+
+
+## Conclusiones
+
+## El breve análisis presentado cumple con un principal requisito del análisis estadístico: graficar los datos, según recomienda Francis Anscombe (http://en.wikipedia.org/wiki/Anscombe%27s_quartet) y nuestro profesor (Ver Anexo 3 además).
+
+## Por la complejidad y aparente aleatoriedad de los datos del examen se ha utilizado un paquete estadístico de uso común que proporciona prestaciones y es adaptable a diferentes situaciones, ya que es un Lenguaje de Programación a la vez que un Entorno Estadístico. Los resultados del análisis se pueden reproducri fácilmente con el código presentado y estará disponibles en unos días en Internet bajo el portal: http://rpubs.com/csaracho/ . No se revela información de tipo confidencial o reservada por lo que consideramos que su publicación no está limitada.
+
+## Se partió de una análisis multivariado con prácticamente todos las variables (18 de 22) y se fue razonando una mejor selección conforme se fue avanzando en la comprensión del problema a la mano.
+
+## Se detectaron  lo que aparenta ser comportamientos contradictorios de dos variables TRIGLICERIDOS Y COLESTEROL). Se graficó el 'antes' y el 'después' de dichas variables con objeto de razonar si los 'tratamientos' contribuyen o no a 'mejorar' los niveles en las personas, encontrándose que diferentes  tratamientos contribuyen a la mejora (tratamientos 'mas prometedores').
+
+## Se pudo centrar al final el anaĺisis en sólo dos (2) variables de las 22 totales.
+
+## Resalta el hecho de que no existe en el conjunto de datos original una variable que asocie los valores de cada persona con un 'estado de salud' asociado a su vez a un 'tratamiento' (correspondiente al número de medicamentos, que sí se proporciona).
+
+## Se hizo evidente la necesidad de realizar 'exámenes' multivariados en contraste a los univariados o bivariados (lo que se de alguna manera también se articula en el Anexo 2).
+
+## No se encontraron resultados categóricamente concluyentes debido quizás a que los datos no corresponden a personas reales, aunque no disponemos de elementos de información para asegurarlo. En todo caso lo que podría ser recomendable es verificar la fuente de información (los protocolos para tomar las mediciones, por ej.) y si éstos son bien seguidos, volver a realizar la toma de muestras, de tal suerte que las personas reflejen en  el conjunto de mediciones de todas las variables una mejoría diferente con cada diferente tratamiento si ese es el objetivo de un tratamiento (con la dispersión estadística asociada o correspondiente).
+
+##                                  CFS y CAD
+
+```
+
+
+
