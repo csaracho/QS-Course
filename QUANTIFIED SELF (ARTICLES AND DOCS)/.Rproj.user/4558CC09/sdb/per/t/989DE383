@@ -1,0 +1,17 @@
+{
+    "contents" : "# R script for steps.csv data mining\n# ==========================================================================\nsteps = read.table('steps.csv', header=TRUE, sep=\",\")\nsummary(steps)\nattach(steps)\nsummary(entries)\nplot(date, entries)\n# Plotting 365 days\ndays = seq(1:365)\nplot(days, xlab = \"days (365)\", entries, ylab = \"entries (steps in a day)\", \n     type = \"s\", xlim = c(1,365), main= \"Steps per day in a year\")\nboxplot(entries, main = \"Boxplots of steps per day (one year)\")\nIQR(entries)\nquantile(entries)\n# Simple Histogram\nhist(entries)\n# A more elaborate Histogram depending on data nature\nc = seq(from=2, to= 457, by=5)\nhist(entries, main=\"Histogram of steps in a year (2014)\", breaks = c)\n\n# Obtaining the discrete probability distribution (PMF)\n# 'results' is an object of class histogram\" with several properties,\n# namely: breaks, counts, density, mids, \nresults = hist(entries, main=\"Histogram of steps in a year (2014)\", breaks = c)\nPMF = data.frame(results$mids, results$counts, results$density)\nplot(results$mids, results$density)\nplot(results$mids, results$density, type=\"l\", col=\"blue\")\n## Esto no da 1 !!\nsum(results$density)\n\n# Obtaining samples of 1 at randmo from steps$entries\nsample(steps$entries, size = 1, replace = TRUE)\n\n# Obtaining samples of 30 at random from steps$entries\nsample(steps$entries, size = 30, replace = TRUE)\n\n# How do we make a complete year from steps dataframe?\n# Hint:\njan = sample(steps$entries, size = 31, replace = TRUE)\nfeb = sample(steps$entries, size = 28, replace = TRUE)\nnew_year_2015 = c(jan, feb)\ndays_of_2015 = seq(as.Date(\"2015/01/01\"), by = \"days\", length.out = 59)\nnew_year_2015 = data.frame(days_of_2015, new_year_2015)\n# Change names to columns (such as the original steps dataframe)\nnames(new_year_2015) = c(\"date\", \"entries\")\n\n\n",
+    "created" : 1438717120581.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "840501083",
+    "id" : "989DE383",
+    "lastKnownWriteTime" : 1438635096,
+    "path" : "~/Dropbox/QUANTIFIED SELF (ARTICLES AND DOCS)/R_script_for_steps.R",
+    "project_path" : "R_script_for_steps.R",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

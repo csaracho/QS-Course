@@ -1,0 +1,22 @@
+{
+    "contents" : "",
+    "created" : 1438652892856.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "5B82CF9E",
+    "lastKnownWriteTime" : 0,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "caption" : "new_year_2015",
+        "contentUrl" : "content?title=new_year_2015&file=7843cec4be724a2ea6f2cbcf06aafcf5.htm",
+        "displayedObservations" : "59",
+        "displayedVariables" : 2,
+        "totalObservations" : "59",
+        "variables" : "2"
+    },
+    "source_on_save" : false,
+    "type" : "r_dataframe"
+}

@@ -1,0 +1,18 @@
+{
+    "contents" : "# Lab 4\n# Hypothesis Testing\n\nqt(p=0.05, df=9,lower.tail = TRUE, log.p = FALSE)\n",
+    "created" : 1438717132075.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "965118879",
+    "id" : "2EB5DB65",
+    "lastKnownWriteTime" : 1438718068,
+    "path" : "~/Dropbox/QUANTIFIED SELF (ARTICLES AND DOCS)/R_script_for_Hypothesis_Testing.R",
+    "project_path" : "R_script_for_Hypothesis_Testing.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "type" : "r_source"
+}
