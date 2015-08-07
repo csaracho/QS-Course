@@ -75,6 +75,7 @@ library(mlmRev)
 
 data(Chem97, package = "mlmRev")
 head(Chem97)
+histogram(~ gcsescore, data = Chem97)
 histogram(~ gcsescore | factor(score), data = Chem97)
 densityplot(~ gcsescore | factor(score), Chem97, groups = gender,
             plot.points = FALSE, auto.key = TRUE)
