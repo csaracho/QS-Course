@@ -1,7 +1,7 @@
 # R script for data mining <Seleccion de Aspirantes 2015.csv>
 seleccion_uno = read.table("Selección de Aspirantes 2015.csv", header = TRUE, sep = ",", na.strings = "ND")
 
-# Do not use the following code cause there three lines at last in csv file
+# Do not use the following code cause there are three lines at last in csv file
 seleccion_prueba = read.table("Seleccion-prueba.csv", header = TRUE, sep = ",", na.strings = "ND")
 attach(seleccion_uno)
 Escuela.de.Origen
