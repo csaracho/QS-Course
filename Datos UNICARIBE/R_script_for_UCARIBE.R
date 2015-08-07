@@ -36,6 +36,9 @@ pairs(vista2)
 cor(vista2, use="complete.obs", method="pearson") 
 
 # Linear regression in R
+#
+
+#
 plot(Global.Ceneval, Promedio.Bachillerato, col="red", xlab="Explanatory variable (Global.Ceneval)",ylab="Response variable(Promedio.Bachillerato)")
 abline(lm(Promedio.Bachillerato~Global.Ceneval))
 
@@ -56,6 +59,7 @@ barplot(counts14, main="Level Diagnostico", horiz=TRUE, 	legend = rownames(count
 beside=FALSE)
 
 ## Lattice package in R
+## See pp. 
 install.packages("lattice")
 require(lattice)
 barchart(yield ~ variety | site, data = barley,
@@ -63,6 +67,20 @@ barchart(yield ~ variety | site, data = barley,
          ylab = "Barley Yield (bushels/acre)",
          scales = list(x = list(abbreviate = TRUE,
                                 minlength = 5)))
+
+## Another Lattice program
+## See the document "lattice-intro.pdf"
+install.packages("mlmRev")
+library(mlmRev)
+
+data(Chem97, package = "mlmRev")
+head(Chem97)
+histogram(~ gcsescore | factor(score), data = Chem97)
+densityplot(~ gcsescore | factor(score), Chem97, groups = gender,
+            plot.points = FALSE, auto.key = TRUE)
+
+## Finish here
+
 
 test2 = lm(Aceptado ~ Promedio) 
 plot(test2)
